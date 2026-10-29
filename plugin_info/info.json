@@ -1,0 +1,34 @@
+{
+	"id": "selenoculture",
+	"name": "Sélénoculture",
+	"pluginVersion": "0.1",
+	"description": {
+		"fr_FR": "Jardiner avec la Lune : phase, lune montante ou descendante, type de jour, jours à éviter, calculés sur la box ; journal des travaux et préconisations selon la lune, la saison, la météo et les sondes des serres.",
+		"en_US": "Gardening by the Moon: phase, ascending or descending Moon, day type, days to avoid, computed locally; work log and advice based on the Moon, the season, the weather and the greenhouse sensors."
+	},
+	"licence": "MIT",
+	"author": "flab",
+	"require": "4.4",
+	"os": {
+		"min": 11,
+		"max": 12.99
+	},
+	"category": "nature",
+	"hasDependency": false,
+	"hasOwnDeamon": false,
+	"changelog_beta": "https://github.com/flab75/plugin-selenoculture/blob/beta/docs/#language#/changelog.md",
+	"documentation_beta": "https://github.com/flab75/plugin-selenoculture/blob/beta/docs/#language#/index.md",
+	"changelog": "https://github.com/flab75/plugin-selenoculture/blob/master/docs/#language#/changelog.md",
+	"documentation": "https://github.com/flab75/plugin-selenoculture/blob/master/docs/#language#/index.md",
+	"language": [
+		"fr_FR"
+	],
+	"compatibility": [
+		"diy",
+		"docker",
+		"rpi",
+		"luna",
+		"atlas",
+		"smart"
+	]
+}
