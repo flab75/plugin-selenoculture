@@ -1,7 +1,7 @@
 {
 	"id": "selenoculture",
 	"name": "Sélénoculture",
-	"pluginVersion": "0.3",
+	"pluginVersion": "0.4",
 	"description": {
 		"fr_FR": "Jardiner avec la Lune : phase, lune montante ou descendante, type de jour, jours à éviter, calculés sur la box ; journal des travaux et préconisations selon la lune, la saison, la météo et les sondes des serres.",
 		"en_US": "Gardening by the Moon: phase, ascending or descending Moon, day type, days to avoid, computed locally; work log and advice based on the Moon, the season, the weather and the greenhouse sensors."
