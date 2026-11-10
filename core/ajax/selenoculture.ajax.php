@@ -14,6 +14,10 @@ try {
     ajax::success(['cal' => selenoculture::calendrier(time(), max(1, min(60, (int)init('jours', 30))), $eq->conv()),
       'journal' => array_reverse($eq->journal())]); // ponytail: tout le journal à chaque ouverture ; ne l'envoyer qu'à l'onglet Journal s'il devient lourd
   }
+  if (init('action') == 'image') { // image NASA de l'heure ronde (UTC) ; le plugin est calculé au même instant pour comparer
+    try { $n = selenoculture::imageNasa(); } catch (Throwable $x) { $n = ['erreur' => $x->getMessage()]; } // NASA muette : le plugin s'affiche quand même
+    ajax::success(['nasa' => $n, 'etat' => selenoculture_lune::etat(isset($n['time']) ? strtotime($n['time'] . ' UTC') : time(), $eq->conv())]);
+  }
   // écriture dans le journal : administrateurs seulement
   if (!isConnect('admin')) throw new Exception(__('401 - Accès non autorisé', __FILE__));
   if (init('action') == 'ajouter') { $t = json_decode((string)init('travail'), true); ajax::success($eq->ajouter(is_array($t) ? $t : [])); }

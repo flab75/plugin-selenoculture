@@ -18,6 +18,7 @@ if (!window.selenoculture) (function () {
     '.sel-mb nav a.on{background:#4a7;color:#fff}.sel-mb nav .z{margin-left:auto}' +
     '.sel-mb table{width:100%;border-collapse:collapse}.sel-mb td,.sel-mb th{padding:3px 5px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top}' +
     '.sel-mb form{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;align-items:center;margin-bottom:10px}' +
+    '.sel-lun{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}.sel-lun img{width:min(320px,100%);background:#000;border-radius:8px}.sel-lun table{flex:1;min-width:240px}.sel-h svg{cursor:pointer}' +
     '.sel-mb input,.sel-mb select,.sel-mb textarea{width:100%;box-sizing:border-box}.sel-mb h4{margin:10px 0 3px}.sel-er{color:#d33}'
   document.head.appendChild(css)
 
@@ -58,8 +59,9 @@ if (!window.selenoculture) (function () {
       .map(function (l) { return '<li><a href="' + l[0] + '" target="_blank" rel="noopener noreferrer">' + l[1] + '</a></li>' }).join('') + '</ul>'
 
   function fenetre(d, onglet) {
+    if (document.querySelector('.sel-m')) return // déjà ouverte (double-clic) : une seule fenêtre, une seule requête
     var m = document.createElement('div'); m.className = 'sel-m'
-    m.innerHTML = '<div class="sel-mb"><nav><a data-o="cal">' + "{{Calendrier}}" + '</a><a data-o="jou">' + "{{Journal}}" + '</a><a data-o="exp">' + "{{Explications}}" + '</a><a class="z">✕</a></nav><div class="sel-ct"></div></div>'
+    m.innerHTML = '<div class="sel-mb"><nav><a data-o="lun">' + "{{Lune du jour}}" + '</a><a data-o="cal">' + "{{Calendrier}}" + '</a><a data-o="jou">' + "{{Journal}}" + '</a><a data-o="exp">' + "{{Explications}}" + '</a><a class="z">✕</a></nav><div class="sel-ct"></div></div>'
     document.body.appendChild(m)
     var ct = m.querySelector('.sel-ct'), cache = null
     function fermer() { m.remove(); document.removeEventListener('keydown', touche) }
@@ -103,9 +105,28 @@ if (!window.selenoculture) (function () {
         a.onclick = function () { ajax(d, 'supprimer', {travail: a.dataset.id}, function () { charger(jou) }, function (er) { a.textContent = er }) }
       })
     }
+    // image de la NASA pour l'heure en cours et paramètres côte à côte (plugin calculé à la même heure ronde UTC que l'image / NASA)
+    function lun() {
+      ct.textContent = "{{Chargement…}}"
+      ajax(d, 'image', {}, function (r) {
+        if (!m.querySelector('nav a.on[data-o="lun"]')) return // autre onglet choisi pendant le chargement
+        var n = r.nasa, ok = !n.erreur, e = r.etat, x = EL[e.element], v = function (a, k) { return a.toFixed(k).replace('.', ',') }
+        var l = [["{{Phase}}", esc(e.phase), ''], ["{{Partie éclairée}}", v(e.illum * 100, 1) + ' %', (ok ? v(n.illum, 1) + ' %' : '')],
+          ["{{Âge}}", v(e.age, 2) + ' j', (ok ? v(n.age, 2) + ' j' : '')], ["{{Distance}}", Math.round(e.dist).toLocaleString() + ' km', (ok ? Math.round(n.distance).toLocaleString() + ' km' : '')],
+          ["{{Diamètre apparent}}", '', (ok ? v(n.diametre / 60, 1) + '′' : '')], ["{{Libration (lat., long.)}}", '', (ok ? v(n.libLat, 1) + '°, ' + v(n.libLon, 1) + '°' : '')],
+          ["{{Angle de l'axe}}", '', (ok ? v(n.axe, 1) + '°' : '')], ["{{Constellation}}", esc(e.constellation), ''],
+          ["{{Type de jour}}", x[0] + ' ' + x[1], ''], ["{{Montante / descendante}}", sens(e.montante), '']]
+        ct.innerHTML = '<div class="sel-lun">' + (ok ? '<img src="' + esc(n.url) + '" alt="' + esc("{{La Lune}}" + ' ' + n.time) + '">' : '<p class="sel-er">' + esc(n.erreur) + '</p>') +
+          '<table><tr><th></th><th>' + "{{Sélénoculture}}" + '</th><th>NASA</th></tr>' +
+          l.map(function (z) { return '<tr><td>' + z[0] + '</td><td>' + z[1] + '</td><td>' + z[2] + '</td></tr>' }).join('') + '</table></div>' +
+          (!ok ? '' : '<p class="sel-s">' + "{{Image : NASA Scientific Visualization Studio (Dial-A-Moon), vue calculée d'après la sonde LRO pour le}}" + ' ' + esc(n.time.replace('T', ' ')) + ' UTC, ' +
+          "{{nord en haut ; ce n'est pas une photo du jour. Colonne Sélénoculture calculée au même instant.}}" + '</p>')
+      }, function (er) { if (m.querySelector('nav a.on[data-o="lun"]')) ct.innerHTML = '<p class="sel-er">' + esc(er) + '</p>' })
+    }
     function montrer(o) {
       m.querySelectorAll('nav a[data-o]').forEach(function (a) { a.classList.toggle('on', a.dataset.o == o) })
       if (o == 'exp') { ct.innerHTML = EXPLI; return }
+      if (o == 'lun') { lun(); return }
       ct.textContent = "{{Chargement…}}"
       if (cache) (o == 'cal' ? cal : jou)(); else charger(o == 'cal' ? cal : jou)
     }
@@ -126,5 +147,6 @@ if (!window.selenoculture) (function () {
         .map(function (c) { return '<li class="' + c[0] + '">' + esc(c[1]) + '</li>' }).join('') + '</ul>' +
       '<div class="sel-bt">' + (d.admin == 1 ? '<a data-o="jou">＋ ' + "{{Noter}}" + '</a>' : '') + '<a data-o="cal">' + "{{Calendrier}}" + '</a><a data-o="exp">?</a></div>'
     b.querySelectorAll('.sel-bt a').forEach(function (a) { a.onclick = function () { fenetre(d, a.dataset.o) } })
+    var s = b.querySelector('.sel-h svg'); s.onclick = function () { fenetre(d, 'lun') }; s.insertAdjacentHTML('afterbegin', '<title>' + "{{Image de la Lune du jour}}" + '</title>')
   }}
 })()

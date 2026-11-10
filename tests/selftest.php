@@ -11,6 +11,10 @@ $cherche = function ($type, $det, $ts) use ($ev) { foreach ($ev as $e) if ($e[1]
 $ok($cherche('phase', 0, gmmktime(7, 2, 0, 11, 9, 2026)), 'nouvelle lune du 9/11/2026 07:02 UTC');
 $ok($cherche('phase', 180, gmmktime(4, 13, 0, 10, 26, 2026)), "pleine lune du 26/10/2026 04:13 UTC");
 $ok($cherche('noeud', 'ascendant', gmmktime(11, 45, 0, 11, 17, 2026)), 'nœud ascendant du 17/11/2026 11:45 UTC');
+$ok($cherche('noeud', 'descendant', gmmktime(3, 35, 0, 11, 30, 2026)), 'nœud descendant du 30/11/2026 03:35 UTC'); // 0.1 : 03:00 (dichotomie à l'envers)
+$ok(abs($L::etat(gmmktime(14, 50, 0, 11, 10, 2026))['age'] - 31.8 / 24) < 0.01, 'âge depuis la nouvelle lune du 9/11 07:02 UTC');
+$ok($L::etat(gmmktime(11, 0, 0, 11, 9, 2026))['phase'] == 'Nouvelle lune' && $L::etat(gmmktime(11, 0, 0, 11, 10, 2026))['phase'] == 'Premier croissant'
+  && $L::etat(gmmktime(11, 0, 0, 10, 25, 2026))['phase'] == 'Gibbeuse croissante', 'nom de phase : principale le jour même seulement');
 $ok($cherche('constellation', 'Vierge|racine', gmmktime(4, 44, 0, 11, 5, 2026)), 'jour racine du 5/11/2026 04:44 UTC (usuel)');
 $ok($cherche('constellation', 'Balance|fleur', gmmktime(17, 21, 0, 11, 8, 2026)), 'jour fleur du 8/11/2026 17:21 UTC (usuel)');
 $ok($L::constellation(220, 'uai')[0] == 'Balance' && $L::constellation(218, 'usuel')[0] == 'Vierge' && $L::constellation(10)[0] == 'Poissons', 'limites usuel / uai');

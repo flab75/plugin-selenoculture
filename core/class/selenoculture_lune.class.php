@@ -89,9 +89,19 @@ class selenoculture_lune {
     return [$c[1], $c[2]];
   }
 
-  public static function phaseNom($elong) {
-    $n = ['Nouvelle lune', 'Premier croissant', 'Premier quartier', 'Gibbeuse croissante', 'Pleine lune', 'Gibbeuse décroissante', 'Dernier quartier', 'Dernier croissant'];
-    return $n[(int)floor(self::norm($elong + 22.5) / 45) % 8];
+  /* Nom de la phase : les 4 phases principales seulement le jour (heure locale) de leur instant,
+     sinon la phase intermédiaire (croissant / gibbeuse). */
+  public static function phaseNom($ts, $elong) {
+    $q = fmod(round($elong / 90) * 90, 360); // phase principale la plus proche
+    $tq = self::instant($ts + (self::norm($q - $elong + 180) - 180) / 360 * self::SYNODIQUE * 86400, $q);
+    if (date('Y-m-d', $tq) == date('Y-m-d', $ts)) return ['Nouvelle lune', 'Premier quartier', 'Pleine lune', 'Dernier quartier'][(int)($q / 90)];
+    return ['Premier croissant', 'Gibbeuse croissante', 'Gibbeuse décroissante', 'Dernier croissant'][(int)floor($elong / 90) % 4];
+  }
+
+  /* Instant (à la minute) où l'élongation vaut $q, cherché à ± 3 jours de l'estimation $t
+     (l'estimation par l'élongation moyenne se trompe de moins d'un jour). */
+  public static function instant($t, $q) {
+    return self::affiner($t - 3 * 86400, $t + 3 * 86400, function ($x) use ($q) { return self::norm(self::position($x)['elong'] - $q + 180) - 180; });
   }
 
   /* Instants des évènements entre $deb et $fin (pas d'une heure, puis dichotomie à la minute) :
@@ -108,7 +118,10 @@ class selenoculture_lune {
         $a = self::norm($p0['elong'] - $q + 180) - 180; $b = self::norm($p['elong'] - $q + 180) - 180;
         if ($a < 0 && $b >= 0) $ev[] = [self::affiner($t0, $t, function ($x) use ($q) { return self::norm(self::position($x)['elong'] - $q + 180) - 180; }), 'phase', $q];
       }
-      if (($p0['lat'] < 0) != ($p['lat'] < 0)) $ev[] = [self::affiner($t0, $t, function ($x) { return self::position($x)['lat']; }), 'noeud', $p['lat'] >= 0 ? 'ascendant' : 'descendant'];
+      if (($p0['lat'] < 0) != ($p['lat'] < 0)) { // affiner() veut une fonction croissante : latitude inversée au nœud descendant
+        $s = $p['lat'] >= 0 ? 1 : -1;
+        $ev[] = [self::affiner($t0, $t, function ($x) use ($s) { return $s * self::position($x)['lat']; }), 'noeud', $s > 0 ? 'ascendant' : 'descendant'];
+      }
       $dd = $p['dec'] - $p0['dec']; $dr = $p['dist'] - $p0['dist'];
       if (($dd > 0) != ($dec0 > 0)) $ev[] = [$t0, $dd > 0 ? 'montante' : 'descendante', round($p0['dec'], 1)]; // ± 1 h suffit
       if (($dr > 0) != ($dist0 > 0)) $ev[] = [$t0, $dr > 0 ? 'perigee' : 'apogee', round($p0['dist'])];
@@ -130,7 +143,9 @@ class selenoculture_lune {
   public static function etat($ts, $conv = 'usuel') {
     $p = self::position($ts); $av = self::position($ts - 3600);
     [$cons, $elem] = self::constellation($p['lonJ2000'], $conv);
-    return $p + ['age' => $p['elong'] / 360 * self::SYNODIQUE, 'croissante' => $p['elong'] < 180, 'montante' => $p['dec'] > $av['dec'],
-      'constellation' => $cons, 'element' => $elem, 'phase' => self::phaseNom($p['elong'])];
+    // âge = temps écoulé depuis la vraie nouvelle lune (l'élongation seule se trompe jusqu'à 0,9 j)
+    $nl = self::instant($ts - $p['elong'] / 360 * self::SYNODIQUE * 86400, 0);
+    return $p + ['age' => max(0, $ts - $nl) / 86400, 'croissante' => $p['elong'] < 180, 'montante' => $p['dec'] > $av['dec'],
+      'constellation' => $cons, 'element' => $elem, 'phase' => self::phaseNom($ts, $p['elong'])];
   }
 }

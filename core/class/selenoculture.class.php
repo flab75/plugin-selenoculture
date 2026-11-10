@@ -69,7 +69,8 @@ class selenoculture extends eqLogic {
     for ($i = 0; $i < $jours; $i++) {
       $a = strtotime('+' . $i . ' days', $d0); $b = strtotime('+1 day', $a); // jours de 23 ou 25 h au changement d'heure
       $n = [];
-      for ($t = $a + 1800; $t < $b; $t += 3600) { $el = selenoculture_lune::etat($t, $conv)['element']; $n[$el] = ($n[$el] ?? 0) + 1; }
+      // élément de chaque heure : position seule, etat() calcule aussi l'âge et la phase (inutile ici)
+      for ($t = $a + 1800; $t < $b; $t += 3600) { $el = selenoculture_lune::constellation(selenoculture_lune::position($t)['lonJ2000'], $conv)[1]; $n[$el] = ($n[$el] ?? 0) + 1; }
       arsort($n);
       $m = selenoculture_lune::etat($a + ($b - $a) / 2, $conv);
       $j = ['date' => date('Y-m-d', $a), 'nom' => __(self::JOURS[date('w', $a)], __FILE__) . ' ' . date('j/m', $a), 'el' => array_key_first($n),
@@ -125,6 +126,25 @@ class selenoculture extends eqLogic {
     return ['id' => $this->getId(), 'etat' => $etat, 'raison' => $raison, 'prochain' => $prochain, 'cal' => array_slice($cal, 0, 7),
       'conseils' => $conseils, 'lieux' => $lieux, 'admin' => isConnect('admin') ? 1 : 0,
       'actions' => array_map(function ($a) { return __($a, __FILE__); }, selenoculture_conseil::ACTIONS), 'actionsCle' => selenoculture_conseil::ACTIONS];
+  }
+
+  // NASA Dial-A-Moon (Scientific Visualization Studio) : image calculée de la Lune pour l'heure ronde en cours (UTC),
+  // d'après les données de la sonde LRO (pas une photo), avec ses paramètres. Une requête par heure au plus (cache).
+  public static function imageNasa($ts = null) {
+    $h = gmdate('Y-m-d\TH:00', $ts ?? time());
+    $c = cache::byKey('selenoculture::dialamoon')->getValue();
+    if (is_array($c) && ($c['time'] ?? '') == $h) return $c;
+    $j = json_decode((string)@file_get_contents('https://svs.gsfc.nasa.gov/api/dialamoon/' . $h, false,
+      stream_context_create(['http' => ['timeout' => 10]])), true);
+    // image servie seulement depuis le site de la NASA (l'adresse finit dans la page), toutes les valeurs présentes,
+    // et pour l'heure demandée : hors de l'année publiée, la NASA renvoie la dernière image (31/12 23 h) sans erreur
+    if (!isset($j['image']['url'], $j['time'], $j['age'], $j['phase'], $j['distance'], $j['diameter'], $j['posangle'], $j['subearth_lat'], $j['subearth_lon'])
+      || $j['time'] !== $h || !is_string($j['image']['url']) || !preg_match('#^https?://svs\.gsfc\.nasa\.gov/#', $j['image']['url'])) throw new Exception(__('Image de la NASA indisponible pour le moment', __FILE__));
+    $r = ['time' => $h, 'url' => preg_replace('#^http:#', 'https:', $j['image']['url']), // page Jeedom en https : pas de contenu mixte
+      'illum' => (float)$j['phase'], 'age' => (float)$j['age'], 'distance' => (float)$j['distance'], 'diametre' => (float)$j['diameter'],
+      'axe' => (float)$j['posangle'], 'libLat' => (float)$j['subearth_lat'], 'libLon' => (float)$j['subearth_lon']];
+    cache::set('selenoculture::dialamoon', $r, 7200);
+    return $r;
   }
 
   public function maj() {

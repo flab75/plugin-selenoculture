@@ -18,7 +18,7 @@ class selenoculture_conseil {
     4 => ['Jardin : planter les pommes de terre, semer betteraves et salades.', 'Serres : endurcir les plants, ombrer et aérer quand le soleil chauffe.'],
     5 => ['Jardin : après les saints de glace, planter tomates, courges et haricots.', 'Serres : sortir les agrumes, surveiller les températures de l\'après-midi.'],
     6 => ['Jardin : pailler, arroser le soir, semer carottes et haricots d\'été.', 'Serres : ombrer, ouvrir en grand, arroser régulièrement.'],
-    7 => ['Jardin : récolter, semer navets et choux d\'hiver, tailler en vert.', 'Serres : aérer jour et nuit, surveiller l\'oïdium.'],
+    7 => ['Jardin : récolter, semer les navets, planter les choux d\'hiver, tailler en vert.', 'Serres : aérer jour et nuit, surveiller l\'oïdium.'],
     8 => ['Jardin : semer mâche, épinards, radis d\'hiver ; récolter les graines.', 'Serres : semer les salades d\'hiver, nettoyer ce qui a fini.'],
     9 => ['Jardin : planter fraisiers, choux ; récolter courges et pommes de terre.', 'Serres : semer mâche et laitues d\'hiver, réduire l\'arrosage.'],
     10 => ['Jardin : planter bulbes, arbres et arbustes, semer les engrais verts.', 'Serres : rentrer les agrumes avant les premières gelées, aérer les jours de soleil.'],
