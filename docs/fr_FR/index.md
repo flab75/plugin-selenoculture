@@ -31,12 +31,14 @@ et les nœuds, 0,02° sur la longitude. Les phases principales (nouvelle lune, q
 l'âge est compté depuis la dernière nouvelle lune. `sudo -u www-data php tests/selftest.php reseau` refait la comparaison à l'USNO.
 
 La sélénoculture est une tradition : aucun effet solide de la Lune sur les cultures n'a été démontré.
-Dix-huit ans de relevés de champignons sauvages en forêt, en Suisse, ne montrent aucun lien avec la phase
-([Egli, Ayer & Merlini 2011](https://sydowia.at/syd63-1/T3-Swiss.html), *Sydowia* 63:23-33).
 Des mesures en laboratoire font osciller la vitesse d'allongement des racines
 ([Barlow et al. 2013](https://doi.org/10.1093/aob/mct052), *Annals of Botany* 111:859-872) et les mouvements des feuilles
 ([Barlow 2015](https://doi.org/10.1093/aob/mcv096), *Annals of Botany* 116:149-187) avec la marée lunisolaire quotidienne
 (cycle d'environ 24,8 h) : des corrélations, « provisoires » selon les auteurs, venues d'un même réseau de chercheurs, sans réplication
 indépendante connue, et qui ne testent pas les règles des calendriers (phase, lune montante, constellations).
+
+**Et les champignons ?** On dit qu'ils sortent davantage autour de la pleine lune. En Suisse, 1 715 relevés datés sur cinq placettes
+forestières suivies de 1990 à 2007 n'ont montré aucun lien entre la phase et l'apparition des champignons sauvages : un mythe, pour les
+auteurs ([Egli, Ayer & Merlini 2011](https://sydowia.at/syd63-1/T3-Swiss.html), *Sydowia* 63:23-33).
 
 > La tuile est dessinée par le plugin : laissez « Widget du plugin » coché dans la configuration avancée de l’équipement, sinon elle reste vide.

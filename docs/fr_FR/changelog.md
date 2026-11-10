@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.4
-- Explications et documentation : ce que disent les études (marée lunisolaire et croissance en laboratoire, champignons et pleine lune), avec les références.
+- Explications et documentation : ce que disent les études (marée lunisolaire et croissance en laboratoire, champignons et pleine lune), avec les références ; les champignons dans un paragraphe à part.
 
 ## 0.3
 - Clic sur la Lune de la tuile : image de la Lune pour l'heure en cours (NASA Dial-A-Moon, vue calculée) et ses paramètres, ceux du plugin (calculés à la même heure) à côté de ceux de la NASA ; si la NASA ne répond pas, les paramètres du plugin s'affichent quand même.
