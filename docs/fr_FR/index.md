@@ -41,4 +41,11 @@ indépendante connue, et qui ne testent pas les règles des calendriers (phase, 
 forestières suivies de 1990 à 2007 n'ont montré aucun lien entre la phase et l'apparition des champignons sauvages : un mythe, pour les
 auteurs ([Egli, Ayer & Merlini 2011](https://sydowia.at/syd63-1/T3-Swiss.html), *Sydowia* 63:23-33).
 
+**Et la déclinaison très forte de ces années-ci ?** Selon un cycle de 18,6 ans, la Lune monte et descend chaque mois plus ou
+moins loin dans le ciel : vers ±28,5° de déclinaison au « grand arrêt lunaire » de 2024-2025 (encore ±27° et plus en 2026), ±18°
+seulement vers 2034. Lune montante et descendante gardent le même rythme (environ 13,6 jours chacune) : le plugin les calcule
+d'après le sens de la déclinaison, ses dates et ses conseils ne changent donc pas, l'écart de hauteur est seulement plus marqué.
+Les pleines lunes d'hiver passent très haut et éclairent la nuit plus longtemps, celles d'été restent basses ; aucune étude ne montre
+d'effet de ce cycle sur les cultures.
+
 > La tuile est dessinée par le plugin : laissez « Widget du plugin » coché dans la configuration avancée de l’équipement, sinon elle reste vide.
